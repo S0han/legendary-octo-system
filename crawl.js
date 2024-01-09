@@ -1,16 +1,17 @@
+const url = require('node:url');
+
 function normalizeURL(url) {
-    if (url.startsWith('https://')) {
-        url = url.replace('https://', '');
-    }
-    else if (url.startsWith('http://')) {
-        url = url.replace('http://', '');
-    }
-    
-    if (url.endsWith('/')) {
-        url = url.slice(0, -1);
+    const myURL = new URL(url);
+    const urlOrigin = myURL.host;
+    let urlPath = myURL.pathname;
+
+    if (urlPath.endsWith('/')) {
+        urlPath = urlPath.slice(0, -1);
     }
     
-    return url;
+    const normalized = urlOrigin + urlPath;
+
+    return normalized;
 }
 
 module.exports = {
