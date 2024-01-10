@@ -1,4 +1,6 @@
 const url = require('node:url');
+const { JSDOM } = require('jsdom');
+
 
 function normalizeURL(url) {
     const myURL = new URL(url);
