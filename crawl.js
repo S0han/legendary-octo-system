@@ -21,7 +21,12 @@ function getURLsFromHTML(htmlBody, baseURL) {
     const a_list = dom.window.document.querySelectorAll('a');
     const links = [];
     for (let i = 0; i < a_list.length; i++) {
-        links.push(a_list[i].getAttribute('href'));
+        if (a_list[i].getAttribute('href').includes(baseURL)) {
+            links.push(a_list[i].getAttribute('href'));
+        } else {
+            const absolute = new URL(`${a_list[i].getAttribute('href')}`, baseURL).href;
+            links.push(absolute);
+        }
     }
     return links
 }
