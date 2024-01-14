@@ -54,4 +54,18 @@ describe('getURLsFromHTML() tests', () => {
         expect(actual).toEqual(expected);
     });
 
+    test('return array with absolute urls using multiple mixed relative and absolute urls as input', () => {
+        const inputURL = 'https://blog.boot.dev';
+        const inputBody = `
+                    <html><body>
+                        <a href="https://blog.boot.dev"><span>Go to Boot.dev</span></a>
+                        <a href="/one"><span>Go to Boot.dev</span></a>
+                        <a href="https://blog.boot.dev/two/days"><span>Go to Boot.dev</span></a>
+                    </body></html>
+                `;
+        const actual = getURLsFromHTML(inputBody, inputURL);
+        const expected = ['https://blog.boot.dev', 'https://blog.boot.dev/one', 'https://blog.boot.dev/two/days'];
+        expect(actual).toEqual(expected);
+    });
+
 });
