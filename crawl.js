@@ -19,7 +19,11 @@ function normalizeURL(url) {
 function getURLsFromHTML(htmlBody, baseURL) {
     const dom = new JSDOM(htmlBody);
     const a_list = dom.window.document.querySelectorAll('a');
-    return a_list
+    const links = [];
+    for (let i = 0; i < a_list.length; i++) {
+        links.push(a_list[i].getAttribute('href'));
+    }
+    return links
 }
 
 module.exports = {
