@@ -16,6 +16,13 @@ function normalizeURL(url) {
     return normalized;
 }
 
+function getURLsFromHTML(htmlBody, baseURL) {
+    const dom = new JSDOM(htmlBody);
+    const a_list = dom.window.document.querySelectorAll('a');
+    return a_list
+}
+
 module.exports = {
-    normalizeURL
+    normalizeURL,
+    getURLsFromHTML
 }
