@@ -31,6 +31,10 @@ function getURLsFromHTML(htmlBody, baseURL) {
     return links
 }
 
+function crawlPage() {
+    //
+}
+ 
 module.exports = {
     normalizeURL,
     getURLsFromHTML
