@@ -18,7 +18,8 @@ function main() {
         console.log(`The crawler is starting at ${BASE_URL}`)
     }
     
-    crawlPage(process.argv[2])
+    const pages = crawlPage(process.argv[2]);
+    console.log(pages);
 }
 
 main()

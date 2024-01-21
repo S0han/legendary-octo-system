@@ -49,7 +49,7 @@ async function crawlPage(URL) {
                 return
             }
             if (response.headers.get('content-type') != 'text/html') {
-                throw new Error('Data is not text/html')
+                throw new Error('Data is not text/html');
             }
         }
 
@@ -59,26 +59,58 @@ async function crawlPage(URL) {
 }
 */
 
-async function crawlPage(baseURL, currentURL, pages) {
-    try {
-        const response = await fetch(URL);
+async function crawlPage(baseURL, currentURL, pages = {}) {
+    const current = new URL(currentURL);
+    const base = new URL(baseURL)
 
-        if (response.ok) {
-            const text = await response.text();
-            console.log(`${text}`);
+    if (current.hostname == base.hostname) {
+        
+        const currentNormalized = normalizeURL(currentURL);
+        const basedNormalized = normalizeURL(baseURL);
+
+
+        if (pages[`${currentNormalized}`]) {
+            pages[`${currentNormalized}`]++;
         } else {
-            if (response.status >= 400) {
-                throw new Error('400+ Error');
-                return
-            }
-            if (response.headers.get('content-type') != 'text/html') {
-                throw new Error('Data is not text/html')
+            pages[`${currentNormalized}`] = 1;
+            
+            if (currentNormalized == basedNormalized) {
+                pages[`${currentNormalized}`] = 0
             }
         }
+        
+        try {
+            const response = await fetch(URL);
+    
+            if (response.ok) {
+                const text = await response.text();
+                console.log(`${text}`);
+                
+                allURLs = getURLsFromHTML(text, baseURL);
 
-    } catch (e) {
-        console.error('Fetch', e);
+                for (let i = 0; i < allURLs.length; i++) {
+                    crawlPage(baseURL, allURLs[i], pages)
+                }
+
+                return pages
+
+            } else {
+                if (response.status >= 400) {
+                    throw new Error('400+ Error');
+                    return
+                }
+                if (response.headers.get('content-type') != 'text/html') {
+                    throw new Error('Data is not text/html');
+                }
+            }
+    
+        } catch (e) {
+            console.error('Fetch', e);
+        }
+    } else {
+        return pages
     }
+    
 }
 
 module.exports = {
