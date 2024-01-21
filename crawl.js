@@ -4,16 +4,12 @@ const { JSDOM } = require('jsdom');
 
 function normalizeURL(url) {
     const myURL = new URL(url);
-    const urlOrigin = myURL.host;
-    let urlPath = myURL.pathname;
+    let urlOrigin = `${myURL.host}${myURL.pathname}`;
 
-    if (urlPath.endsWith('/')) {
-        urlPath = urlPath.slice(0, -1);
+    if (urlOrigin.length > 0 && urlOrigin.slice(-1) == '/') {
+        urlOrigin = urlOrigin.slice(0, -1);
     }
-    
-    const normalized = urlOrigin + urlPath;
-
-    return normalized;
+    return urlOrigin;
 }
 
 function getURLsFromHTML(htmlBody, baseURL) {
@@ -63,55 +59,52 @@ async function crawlPage(baseURL, currentURL, pages = {}) {
     const current = new URL(currentURL);
     const base = new URL(baseURL)
 
-    if (current.hostname == base.hostname) {
-        
-        const currentNormalized = normalizeURL(currentURL);
-        const basedNormalized = normalizeURL(baseURL);
-
-
-        if (pages[`${currentNormalized}`]) {
-            pages[`${currentNormalized}`]++;
-        } else {
-            pages[`${currentNormalized}`] = 1;
-            
-            if (currentNormalized == basedNormalized) {
-                pages[`${currentNormalized}`] = 0
-            }
-        }
-        
-        try {
-            const response = await fetch(URL);
-    
-            if (response.ok) {
-                const text = await response.text();
-                console.log(`${text}`);
-                
-                allURLs = getURLsFromHTML(text, baseURL);
-
-                for (let i = 0; i < allURLs.length; i++) {
-                    crawlPage(baseURL, allURLs[i], pages)
-                }
-
-                return pages
-
-            } else {
-                if (response.status >= 400) {
-                    throw new Error('400+ Error');
-                    return
-                }
-                if (response.headers.get('content-type') != 'text/html') {
-                    throw new Error('Data is not text/html');
-                }
-            }
-    
-        } catch (e) {
-            console.error('Fetch', e);
-        }
-    } else {
+    if (current.hostname !== base.hostname) {
         return pages
     }
+        
+    const currentNormalized = normalizeURL(currentURL);
+
+
+    if (pages[`${currentNormalized}`] > 0) {
+        pages[`${currentNormalized}`]++;
+        return pages
+    }
+    pages[`${currentNormalized}`] = 1;
+        
+        
+    console.log(`crawling ${currentURL}`)
+    let htmlBody = ''
+        
+    try {
+        const response = await fetch(currentURL);
+        if (response.status >= 400) {
+            throw new Error('400+ Error');
+            return pages
+        }
+        const contentType = response.headers.get('content-type');
+        if (!contentType.includes('text/html')) {
+            console.log(`${contentType} is not text/html`);
+            return pages
+        }
+        text = await response.text();
+    } catch (err) {
+        console.log(err.message);
+    }
     
-}
+    const allURLs = getURLsFromHTML(text, baseURL);
+    for (const url of allURLs) {
+        pages = await crawlPage(baseURL, url, pages);
+    }
+    return pages
+  
+        
+} 
+
+            
+                
+    
+
 
 module.exports = {
     normalizeURL,

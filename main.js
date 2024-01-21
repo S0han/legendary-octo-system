@@ -1,7 +1,7 @@
 const { argv } = require('node:process');
 const { crawlPage } = require('./crawl')
 
-function main() {
+async function main() {
     //test url underneath
     // base_url = 'https://wagslane.dev'
     
@@ -13,13 +13,17 @@ function main() {
     } else if (process.argv.length > 3) {
         console.error('More than 1 CLI argument');
         return
-    } else {
-        BASE_URL = process.argv[2]
-        console.log(`The crawler is starting at ${BASE_URL}`)
-    }
+    } 
+
+    BASE_URL = process.argv[2]
+    console.log(`The crawler is starting at ${BASE_URL}`)
     
-    const pages = crawlPage(process.argv[2]);
-    console.log(pages);
+    
+    const pages = await crawlPage(BASE_URL, BASE_URL, {});
+
+    for (const page in Object.entries(pages)) {
+        console.log(pages);
+    }
 }
 
 main()
