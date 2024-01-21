@@ -31,11 +31,32 @@ function getURLsFromHTML(htmlBody, baseURL) {
     return links
 }
 
-function crawlPage() {
-    //
+async function crawlPage(URL) {
+    try {
+        const response = await fetch(URL);
+
+        if (response.ok) {
+            const text = await response.text();
+            const dom = new JSDOM(text, {contentType: 'text/html' });
+            const htmlBody = dom.window.document.querySelector('body').innerHTML;
+            console.log(`${htmlBody}`);
+        } else {
+            if (response.status >= 400) {
+                throw new Error('400+ Error');
+                return
+            }
+            if (response.headers.get('content-type') != 'text/html') {
+                throw new Error('Data is not text/html')
+            }
+        }
+
+    } catch (e) {
+        console.error('Fetch', e);
+    }
 }
  
 module.exports = {
     normalizeURL,
-    getURLsFromHTML
+    getURLsFromHTML,
+    crawlPage,
 }
