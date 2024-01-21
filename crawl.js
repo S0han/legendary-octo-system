@@ -31,6 +31,8 @@ function getURLsFromHTML(htmlBody, baseURL) {
     return links
 }
 
+//original crawlPage fcn before recursion addition
+/* 
 async function crawlPage(URL) {
     try {
         const response = await fetch(URL);
@@ -55,7 +57,30 @@ async function crawlPage(URL) {
         console.error('Fetch', e);
     }
 }
- 
+*/
+
+async function crawlPage(baseURL, currentURL, pages) {
+    try {
+        const response = await fetch(URL);
+
+        if (response.ok) {
+            const text = await response.text();
+            console.log(`${text}`);
+        } else {
+            if (response.status >= 400) {
+                throw new Error('400+ Error');
+                return
+            }
+            if (response.headers.get('content-type') != 'text/html') {
+                throw new Error('Data is not text/html')
+            }
+        }
+
+    } catch (e) {
+        console.error('Fetch', e);
+    }
+}
+
 module.exports = {
     normalizeURL,
     getURLsFromHTML,
