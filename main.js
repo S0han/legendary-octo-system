@@ -1,7 +1,7 @@
 const { argv } = require('node:process');
 const { crawlPage } = require('./crawl')
 
-function main() {
+async function main() {
     //test url underneath
     // base_url = 'https://wagslane.dev'
     
@@ -19,8 +19,11 @@ function main() {
     console.log(`The crawler is starting at ${BASE_URL}`)
     
     
-    const pages = crawlPage(BASE_URL, BASE_URL, {});
-    console.log(pages);
+    const pages = await crawlPage(BASE_URL, BASE_URL, {});
+
+    for (const page in Object.entries(pages)) {
+        console.log(pages);
+    }
 }
 
 main()
