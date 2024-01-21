@@ -13,12 +13,13 @@ function main() {
     } else if (process.argv.length > 3) {
         console.error('More than 1 CLI argument');
         return
-    } else {
-        BASE_URL = process.argv[2]
-        console.log(`The crawler is starting at ${BASE_URL}`)
-    }
+    } 
+
+    BASE_URL = process.argv[2]
+    console.log(`The crawler is starting at ${BASE_URL}`)
     
-    const pages = crawlPage(process.argv[2]);
+    
+    const pages = crawlPage(BASE_URL, BASE_URL, {});
     console.log(pages);
 }
 
