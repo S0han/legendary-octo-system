@@ -54,13 +54,12 @@ async function crawlPage(baseURL, currentURL, pages = {}) {
         
         const contentType = response.headers.get('content-type');
         if ( !contentType.includes('text/html')) {
-            console.log(`${contentType} is not text/html`);
-            return pages
+            throw new Error(`${contentType} is not text/html`);
         }
         
         const htmlBody = await response.text();
         const allURLs = getURLsFromHTML(htmlBody, baseURL);
-
+        
         for (let i = 0; i < allURLs.length; i++) {
             crawlPage(baseURL, allURLs[i], pages);
         }
